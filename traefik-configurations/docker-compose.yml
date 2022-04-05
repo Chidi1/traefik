@@ -1,6 +1,24 @@
 version: "3"
 
 services:
+  webapp:
+    image: palloregistry.azurecr.io/wip-web-app:Latest
+    ports:
+      - "9002:9000"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "./portainer:/data"
+    restart: always
+
+  cache:
+    image: redis:6.2-alpine
+    restart: always
+    ports:
+      - '6379:6379'
+    command: redis-server --save 20 1 --loglevel warning --requirepass eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81
+    volumes: 
+      - cache:/data
+
   traefik:
     image: "traefik:v2.6"
     container_name: "traefik2"
@@ -10,6 +28,7 @@ services:
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.web.address=:80"
+      - "--docker --docker.domain=proxydev.pallo.io"
     ports:
       - "80:80"
       - "8080:8080"
@@ -24,7 +43,7 @@ services:
       - "traefik.enable=true"
       - "traefik.docker.network=proxy"
       - "traefik.http.routers.traefik-secure.entrypoints=websecure"
-      - "traefik.http.routers.traefik-secure.rule=Host(`traefik.localhost`)"
+      - "traefik.http.routers.traefik-secure.rule=Host(`proxydev.pallo.io`)"
       - "traefik.http.routers.traefik-secure.middlewares=user-auth@file"
       - "traefik.http.routers.traefik-secure.service=api@internal"
 
