@@ -27,7 +27,7 @@ providers:
 certificatesResolvers:
   letsencrypt:
     acme:
-      email: engineering.admin@pallo.com
+      email: add email
       storage: acme.json
       keyType: EC384
       tlsChallenge: {}
